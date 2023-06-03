@@ -83,12 +83,12 @@ bob.say("Hello " + boby.name)  # `bob.say`` trigger event DispatchEvent.FIELD_GE
 boby.say("Hey " + bob.name)  # `boby.say`` trigger event DispatchEvent.FIELD_GET, and `boby.say(...)` trigger DispatchEvent.ON_METHOD_CALLS
 
 # output 
-# DispatchEventInfo(event=<DispatchEvent.FIELD_SET: 2>, object=<__main__.Adult object at 0x7f7a6450ca10>, function=<slot wrapper '__setattr__' of 'object' objects>, function_trigger=<function Person.__init__ at 0x7f7a64506d40>, args=('name', 'bob'), kwargs={})
+# qDispatchEventInfo(event=<DispatchEvent.FIELD_SET: 2>, object=<__main__.Adult object at 0x7f7a6450ca10>, function=<slot wrapper '__setattr__' of 'object' objects>, function_trigger=<function Person.__init__ at 0x7f7a64506d40>, args=('name', 'bob'), kwargs={})
 # DispatchEventInfo(event=<DispatchEvent.FIELD_SET: 2>, object=<__main__.Adult object at 0x7f7a6450ca10>, function=<slot wrapper '__setattr__' of 'object' objects>, function_trigger=<function Person.__init__ at 0x7f7a64506d40>, args=('age', 23), kwargs={})
 # DispatchEventInfo(event=<DispatchEvent.FIELD_SET: 2>, object=<__main__.Kid object at 0x7f7a6450df10>, function=<slot wrapper '__setattr__' of 'object' objects>, function_trigger=<function Person.__init__ at 0x7f7a64506d40>, args=('name', 'boby'), kwargs={})
 # DispatchEventInfo(event=<DispatchEvent.FIELD_SET: 2>, object=<__main__.Kid object at 0x7f7a6450df10>, function=<slot wrapper '__setattr__' of 'object' objects>, function_trigger=<function Person.__init__ at 0x7f7a64506d40>, args=('age', 6), kwargs={})
 # DispatchEventInfo(event=<DispatchEvent.FIELD_GET: 1>, object=<__main__.Adult object at 0x7f7a6450ca10>, function=<slot wrapper '__getattribute__' of 'object' objects>, function_trigger='<module>', args=('say',), kwargs={})
-#DispatchEventInfo(event=<DispatchEvent.FIELD_GET: 1>, object=<__main__.Kid object at 0x7f7a6450df10>, function=<slot wrapper '__getattribute__' of 'object' objects>, function_trigger='<module>', args=('name',), kwargs={})
+# DispatchEventInfo(event=<DispatchEvent.FIELD_GET: 1>, object=<__main__.Kid object at 0x7f7a6450df10>, function=<slot wrapper '__getattribute__' of 'object' objects>, function_trigger='<module>', args=('name',), kwargs={})
 # DispatchEventInfo(event=<DispatchEvent.FIELD_GET: 1>, object=<__main__.Adult object at 0x7f7a6450ca10>, function=<slot wrapper '__getattribute__' of 'object' objects>, function_trigger='say', args=('name',), kwargs={})
 # BOB: Hello boby
 # DispatchEventInfo(event=<DispatchEvent.FIELD_GET: 1>, object=<__main__.Kid object at 0x7f7a6450df10>, function=<slot wrapper '__getattribute__' of 'object' objects>, function_trigger='<module>', args=('say',), kwargs={})
