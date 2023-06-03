@@ -1,6 +1,6 @@
 # dispatcher
 this dispatcher module provide easy to use
-events trigger for classes and functions
+events trigger for classes and functions, without creating a proxy class between the caller and the class.
 
 ## example 
 
