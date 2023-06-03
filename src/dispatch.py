@@ -26,6 +26,10 @@ class DispatchEvent(enum.Flag):
     ON_CALL = enum.auto()
 
 
+class DispatchBehaviour(enum.Flag):
+    INCLUDE_INHERITANCE = enum.auto()
+
+
 @dataclass(slots=True, frozen=True)
 class DispatchEventInfo:
     event: DispatchHandlerNotFound
@@ -51,31 +55,33 @@ def _dispatch_builtin_dunder(
     cls: type,
     name: str,
     event: DispatchEvent,
+    behaviour: DispatchBehaviour,
     handlers: list[Callable]
 ) -> Callable:
     original_dunder_mathod = getattr(cls, name, None)
 
     @wraps(original_dunder_mathod)
     def __dunder_overwrite__(self, *args, **kwargs) -> Any:
-        # the last stack frame is `__dunder_overwrite__`, so we take who ever
-        # called this dunder method, this is the one who triggered it
-        trigger_function_name = inspect.stack()[1].function
+        if type(self) is cls or DispatchBehaviour.INCLUDE_INHERITANCE in behaviour:
+            # the last stack frame is `__dunder_overwrite__`, so we take who ever
+            # called this dunder method, this is the one who triggered it
+            trigger_function_name = inspect.stack()[1].function
 
-        # if we can't retrive the function reference from the object
-        # then at least give the dispatch event info the name of the function
-        function_trigger = getattr(cls, trigger_function_name, trigger_function_name)
+            # if we can't retrive the function reference from the object
+            # then at least give the dispatch event info the name of the function
+            function_trigger = getattr(cls, trigger_function_name, trigger_function_name)
 
-        _call_dispatch_handlers(
-            handlers,
-            DispatchEventInfo(
-                object=self,
-                event=event,
-                function=original_dunder_mathod,
-                function_trigger=function_trigger,
-                args=args,
-                kwargs=kwargs
+            _call_dispatch_handlers(
+                handlers,
+                DispatchEventInfo(
+                    object=self,
+                    event=event,
+                    function=original_dunder_mathod,
+                    function_trigger=function_trigger,
+                    args=args,
+                    kwargs=kwargs
+                )
             )
-        )
 
         if original_dunder_mathod is not None:
             try:
@@ -90,6 +96,7 @@ def _dispatch_builtin_dunder(
 def _dispatch_function(
     func: Callable,
     events: DispatchEvent, 
+    behaviour: DispatchBehaviour,
     handlers: Iterable[Callable]
 ) -> Callable:
     if DispatchEvent.ON_CALL in events:
@@ -113,6 +120,7 @@ def _dispatch_function(
 def _dispatch_class(
     cls: type,
     events: DispatchEvent, 
+    behaviour: DispatchBehaviour,
     handlers: Iterable[Callable]
 ) -> type:
     builtin_event_dunder = {
@@ -129,7 +137,7 @@ def _dispatch_class(
 
         for func_name in dunder_func_names:
             setattr(cls, func_name, _dispatch_builtin_dunder(
-                cls, func_name, (event), handlers
+                cls, func_name, (event), (behaviour), handlers
             ))
 
     if DispatchEvent.ON_METHOD_CALLS in events:
@@ -141,6 +149,7 @@ def _dispatch_class(
             setattr(cls, member, _dispatch_function(
                 func=func,
                 events=(DispatchEvent.ON_CALL),
+                behaviour=behaviour,
                 handlers=handlers
             ))
     return cls 
@@ -148,6 +157,7 @@ def _dispatch_class(
 
 def dispatch(
     events: DispatchEvent,
+    behaviour: DispatchBehaviour,
     handlers: Iterable[Callable | str]
 ) -> None:
     def _(cls_or_func: type | Callable, /) -> type:
@@ -164,8 +174,8 @@ def dispatch(
         setattr(cls_or_func, DISPATCH_HANDLERS_ATTR, dispatch_handlers)
 
         if inspect.isfunction(cls_or_func):
-            return _dispatch_function(cls_or_func, events, dispatch_handlers)
-        return _dispatch_class(cls_or_func, events, dispatch_handlers)
+            return _dispatch_function(cls_or_func, events, behaviour, dispatch_handlers)
+        return _dispatch_class(cls_or_func, events, behaviour, dispatch_handlers)
     return _
 
     
