@@ -153,11 +153,12 @@ def dispatch(
     def _(cls_or_func: type | Callable, /) -> type:
         dispatch_handlers = []
 
+        # resolve handlers provided as string
         for handler in handlers:
             if isinstance(handler, str):
                 if not hasattr(cls_or_func, handler):
                     raise DispatchHandlerNotFound(cls_or_func, handler)
-                hanlder = getattr(cls_or_func, handler)
+                handler = getattr(cls_or_func, handler)
             dispatch_handlers.append(handler)
 
         setattr(cls_or_func, DISPATCH_HANDLERS_ATTR, dispatch_handlers)
